@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ทำเนียบผู้แทนประเทศไทย — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap');
+:root{
+  --bg:#eef2f8;
+  --sur:#ffffff;
+  --sur2:#e4eaf4;
+  --bor:#c2cfe0;
+  --txt:#0d1b35;
+  --txt2:#1e3358;
+  --mut:#4a5f80;
+  --acc:#1550a0;
+  --acc2:#dde8f8;
+  --mahidol:#1550a0;
+  --mahidol-bg:#dde8f8;
+  --kamnoed:#b03500;
+  --kamnoed-bg:#fde8e0;
+  --triam:#145228;
+  --triam-bg:#d1fae5;
+  --gold:#7c5200;
+  --gold-bg:#fef3c7;
+  --silver:#334155;
+  --bronze:#6b2d0a;
+  --up:#145228;
+  --up-bg:#d1fae5;
+  --dn:#881515;
+  --dn-bg:#fee2e2;
+  --st:#2d3748;
+  --st-bg:#e8ecf2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-weight:500}
+
+.banner{background:var(--acc);padding:22px 36px 16px;position:relative;overflow:hidden}
+.banner::after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.07)}
+.banner h1{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:2px;letter-spacing:.01em}
+.banner p{color:rgba(255,255,255,.85);font-size:0.84rem;font-weight:500}
+.hstats{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap}
+.hs{background:rgba(255,255,255,.18);border-radius:8px;padding:8px 16px;text-align:center;min-width:90px}
+.hs-n{font-size:1.75rem;font-weight:800;color:#fff;line-height:1}
+.hs-l{font-size:0.72rem;color:rgba(255,255,255,.9);margin-top:2px;font-weight:600}
+.new-badge{background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:2px 8px;font-size:0.72rem;font-weight:700;margin-left:8px;vertical-align:middle}
+
+nav{display:flex;gap:2px;padding:10px 36px;background:var(--sur);border-bottom:2px solid var(--bor);overflow-x:auto;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+nav button{background:none;border:1px solid transparent;color:var(--mut);padding:6px 14px;border-radius:6px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:0.86rem;font-weight:600;transition:all .15s}
+nav button:hover{color:var(--acc);background:var(--acc2)}
+nav button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+main{padding:22px 36px;max-width:1220px}
+.section{display:none}
+.section.active{display:block}
+
+.sec-title{font-size:1.05rem;font-weight:800;color:var(--acc);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--bor);letter-spacing:.01em}
+
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card h3{font-size:0.84rem;color:var(--txt2);margin-bottom:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.chart-wrap canvas{max-height:300px}
+.chart-tall canvas{max-height:400px}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+.kpi{background:var(--sur);border:1px solid var(--bor);border-radius:10px;padding:16px 14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.kpi-n{font-size:2rem;font-weight:800;color:var(--acc);line-height:1}
+.kpi-l{font-size:0.74rem;color:var(--mut);margin-top:4px;font-weight:600}
+
+.ctrl{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.ctrl label{font-size:0.8rem;color:var(--txt2);font-weight:700}
+.ctrl select{background:#fff;border:1.5px solid var(--bor);color:var(--txt);padding:5px 10px;border-radius:5px;font-family:'Sarabun',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer}
+.ctrl button{background:#fff;border:1.5px solid var(--bor);color:var(--mut);padding:5px 12px;border-radius:5px;font-family:'Sarabun',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;transition:all .15s}
+.ctrl button.sel{background:var(--acc);color:#fff;border-color:var(--acc)}
+.ctrl button:hover:not(.sel){background:var(--acc2);color:var(--acc);border-color:var(--acc)}
+
+.sc2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.sc-card{border-radius:10px;padding:16px;border:2px solid}
+.sc-card.m{border-color:var(--mahidol);background:var(--mahidol-bg)}
+.sc-card.k{border-color:var(--kamnoed);background:var(--kamnoed-bg)}
+.sc-card h3{font-size:1rem;font-weight:800;margin-bottom:10px}
+.sc-card.m h3{color:var(--mahidol)}
+.sc-card.k h3{color:var(--kamnoed)}
+.sc-row{display:flex;justify-content:space-between;padding:5px 0;font-size:0.85rem;border-bottom:1px solid rgba(0,0,0,.08);font-weight:500}
+.sc-row:last-child{border-bottom:none}
+.sc-row .v{font-weight:800;color:var(--txt)}
+
+.insight{background:var(--acc2);border:1px solid #b3ccee;border-left:4px solid var(--acc);border-radius:8px;padding:13px 17px;margin-top:12px;font-size:0.85rem;line-height:1.75;color:#0e254a;font-weight:500}
+.insight strong{color:var(--acc);font-weight:800}
+.insight .hi{color:var(--kamnoed);font-weight:800}
+
+.ttable{width:100%;border-collapse:collapse;font-size:0.85rem}
+.ttable th{text-align:left;padding:9px 10px;color:var(--txt2);border-bottom:2px solid var(--bor);font-weight:700;background:var(--sur2)}
+.ttable td{padding:8px 10px;border-bottom:1px solid var(--bor);color:var(--txt);font-weight:500}
+.ttable tr:last-child td{border-bottom:none}
+.ttable tr:hover td{background:var(--acc2)}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:12px;font-size:0.76rem;font-weight:800}
+.b-up{background:var(--up-bg);color:var(--up)}
+.b-dn{background:var(--dn-bg);color:var(--dn)}
+.b-st{background:var(--st-bg);color:var(--st)}
+
+.trend-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+.trend-col{border-radius:10px;padding:14px;border:1px solid}
+.trend-col h3{font-size:0.84rem;font-weight:800;margin-bottom:10px}
+.trend-col.up{border-color:#86efac;background:#f0fdf4}
+.trend-col.up h3{color:var(--up)}
+.trend-col.dn{border-color:#fca5a5;background:#fff5f5}
+.trend-col.dn h3{color:var(--dn)}
+.trend-col.st{border-color:var(--bor);background:var(--sur2)}
+.trend-col.st h3{color:var(--st)}
+.trend-item{padding:5px 0;border-bottom:1px solid rgba(0,0,0,.07);font-size:0.83rem;font-weight:500}
+.trend-item:last-child{border-bottom:none}
+.trend-item strong{display:block;font-weight:700;color:var(--txt)}
+.trend-item span{color:var(--mut);font-size:0.77rem;font-weight:500}
+
+.strat-table{width:100%;border-collapse:collapse;font-size:0.85rem}
+.strat-table th{text-align:left;padding:9px 11px;background:var(--acc);color:#fff;font-weight:700}
+.strat-table th:first-child{border-radius:6px 0 0 0}
+.strat-table th:last-child{border-radius:0 6px 0 0}
+.strat-table td{padding:9px 11px;border-bottom:1px solid var(--bor);font-weight:500;color:var(--txt)}
+.strat-table tr:nth-child(even) td{background:var(--acc2)}
+.strat-table tr:hover td{background:#d0e3f5}
+
+.pill-g{background:var(--up-bg);color:var(--up);padding:3px 9px;border-radius:10px;font-size:.78rem;font-weight:800}
+.pill-y{background:var(--gold-bg);color:var(--gold);padding:3px 9px;border-radius:10px;font-size:.78rem;font-weight:800}
+.pill-b{background:var(--acc2);color:var(--acc);padding:3px 9px;border-radius:10px;font-size:.78rem;font-weight:800}
+
+@media(max-width:768px){
+  .banner,main,nav{padding-left:14px;padding-right:14px}
+  .g2,.g3,.g4,.sc2,.trend-cols{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="banner">
+  <h1>📊 ทำเนียบผู้แทนประเทศไทย <span class="new-badge">ข้อมูลล่าสุด 2568</span></h1>
+  <p>โอลิมปิกวิชาการระดับนานาชาติ &nbsp;|&nbsp; IMO · IOI · IBO · IPhO · IChO · iGeo · IOAA · IESO &nbsp;|&nbsp; พ.ศ. 2532–2568</p>
+  <div class="hstats">
+    <div class="hs"><div class="hs-n">911</div><div class="hs-l">ผู้แทนทั้งหมด</div></div>
+    <div class="hs"><div class="hs-n">37</div><div class="hs-l">ปีที่บันทึก</div></div>
+    <div class="hs"><div class="hs-n">74</div><div class="hs-l">โรงเรียน</div></div>
+    <div class="hs"><div class="hs-n">8</div><div class="hs-l">วิชา / รายการ</div></div>
+    <div class="hs"><div class="hs-n" style="color:#fde68a">167</div><div class="hs-l">มหิดลวิทยานุสรณ์</div></div>
+    <div class="hs"><div class="hs-n" style="color:#fdba74">40</div><div class="hs-l">กำเนิดวิทย์</div></div>
+  </div>
+</div>
+<nav>
+  <button class="active" onclick="showSec('overview',this)">ภาพรวม</button>
+  <button onclick="showSec('school',this)">แนวโน้มแยกโรงเรียน</button>
+  <button onclick="showSec('subject',this)">แนวโน้มแยกวิชา</button>
+  <button onclick="showSec('compare',this)">มหิดลฯ vs กำเนิดวิทย์</button>
+  <button onclick="showSec('trendtable',this)">ขาขึ้น / ขาลง</button>
+  <button onclick="showSec('mahidol',this)">วิเคราะห์เชิงลึก: มหิดลฯ</button>
+</nav>
+<main>
+
+<!-- OVERVIEW -->
+<div id="sec-overview" class="section active">
+  <div class="sec-title">ภาพรวมสถิติ</div>
+  <div class="g4" style="margin-bottom:18px">
+    <div class="kpi"><div class="kpi-n">37%</div><div class="kpi-l">สัดส่วนมหิดลฯ จากที่นั่งทุกวิชา (2547–2568)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--triam)">37%</div><div class="kpi-l">สัดส่วนเตรียมอุดมศึกษา (5 วิชาหลัก ตลอดกาล)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">95%</div><div class="kpi-l">อัตราได้เหรียญมหิดลฯ (ทุกวิชา)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--kamnoed)">100%</div><div class="kpi-l">อัตราได้เหรียญกำเนิดวิทย์</div></div>
+  </div>
+  <div class="card chart-tall">
+    <h3>จำนวนผู้แทนต่อปี แยกโรงเรียนหลัก (รวมทุกวิชา)</h3>
+    <div class="chart-wrap"><canvas id="c-stacked"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><h3>ผู้แทนสะสมต่อโรงเรียน (Top 10)</h3>
+      <div class="chart-wrap"><canvas id="c-bar-school"></canvas></div>
+    </div>
+    <div class="card"><h3>สัดส่วนผู้แทนตามวิชา / รายการแข่งขัน (ตลอดกาล)</h3>
+      <div class="chart-wrap"><canvas id="c-pie"></canvas></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>ข้อสังเกตภาพรวม:</strong> 5 วิชาหลักมีโควต้าคงที่ต่อปี (คณิตศาสตร์ 6, ฟิสิกส์ 5, เคมี/ชีววิทยา/คอมพิวเตอร์ 4 คนต่อวิชา รวม 23 คน/ปี) จำนวนต่อปีโดยรวมเพิ่มขึ้นหลังปี 2547 เนื่องจากเพิ่มรายการ iGeo, IOAA และ IESO <strong>มหิดลวิทยานุสรณ์ครองอันดับ 1 ใน IOAA และ IESO</strong> ขณะที่กำเนิดวิทย์เข้าสู่ระบบปี 2560 และมีพัฒนาการอย่างต่อเนื่อง
+  </div>
+</div>
+
+<!-- BY SCHOOL -->
+<div id="sec-school" class="section">
+  <div class="sec-title">แนวโน้มผู้แทนแยกโรงเรียน</div>
+  <div class="ctrl">
+    <label>เลือกโรงเรียน:</label>
+    <button class="sel" onclick="togSch('เตรียมอุดมศึกษา',this)">เตรียมอุดมศึกษา</button>
+    <button class="sel" onclick="togSch('มหิดลวิทยานุสรณ์',this)">มหิดลวิทยานุสรณ์</button>
+    <button class="sel" onclick="togSch('สวนกุหลาบวิทยาลัย',this)">สวนกุหลาบ</button>
+    <button class="sel" onclick="togSch('กำเนิดวิทย์',this)">กำเนิดวิทย์</button>
+    <button onclick="togSch('กรุงเทพคริสเตียนวิทยาลัย',this)">กรุงเทพคริสเตียน</button>
+    <button onclick="togSch('บดินทรเดชา (สิงห์ สิงหเสนี)',this)">บดินทรเดชา</button>
+    <button onclick="togSch('สาธิตจุฬาฯ (ฝ่ายมัธยม)',this)">สาธิตจุฬาฯ</button>
+    <button onclick="togSch('สามเสนวิทยาลัย',this)">สามเสน</button>
+  </div>
+  <div class="card chart-tall">
+    <h3>จำนวนผู้แทนต่อปี แยกโรงเรียน (รวมทุกวิชา)</h3>
+    <div class="chart-wrap"><canvas id="c-sch-line"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>พัฒนาการที่โดดเด่น:</strong> <strong>มหิดลวิทยานุสรณ์</strong> เริ่มส่งผู้แทนปี 2547 และมีแนวโน้มเพิ่มขึ้นสูงที่สุดในบรรดาทุกโรงเรียน (slope +0.28/ปี, R²=0.49) มีจุดสูงสุดที่ 12 คนในปี 2554 และ 2562 <strong class="hi">กำเนิดวิทย์</strong> เริ่มปี 2560 มีพัฒนาการต่อเนื่อง (slope +0.14/ปี) ปี 2568 ส่งได้ 6 คน ขณะที่มหิดลฯ ส่งได้ 4 คน <strong>สวนกุหลาบวิทยาลัย</strong> มีแนวโน้มลดลงจากจุดสูงสุดในทศวรรษ 2530–2540
+  </div>
+</div>
+
+<!-- BY SUBJECT -->
+<div id="sec-subject" class="section">
+  <div class="sec-title">แนวโน้มแยกตามวิชา</div>
+  <div class="card">
+    <h3>จำนวนผู้แทนต่อปี แยกวิชา</h3>
+    <div class="ctrl">
+      <label>โรงเรียน:</label>
+      <select id="subj-sch" onchange="updSubj()">
+        <option value="all">ทุกโรงเรียน</option>
+        <option value="มหิดลวิทยานุสรณ์">มหิดลวิทยานุสรณ์</option>
+        <option value="กำเนิดวิทย์">กำเนิดวิทย์</option>
+        <option value="เตรียมอุดมศึกษา">เตรียมอุดมศึกษา</option>
+        <option value="สวนกุหลาบวิทยาลัย">สวนกุหลาบวิทยาลัย</option>
+      </select>
+      <label>เฉพาะ 5 วิชาหลัก:</label>
+      <input type="checkbox" id="core-only" onchange="updSubj()">
+    </div>
+    <div class="chart-wrap chart-tall"><canvas id="c-subj-line"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <h3>มหิดลฯ — จำนวนผู้แทนต่อวิชา (สะสม)</h3>
+      <div class="chart-wrap"><canvas id="c-m-subj-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>กำเนิดวิทย์ — จำนวนผู้แทนต่อวิชา (สะสม)</h3>
+      <div class="chart-wrap"><canvas id="c-k-subj-bar"></canvas></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>วิชาที่มหิดลฯ มีความโดดเด่น:</strong> IOAA (ดาราศาสตร์ฯ) 29 คน, ชีววิทยา 30 คน, เคมี 24 คน, ฟิสิกส์ 27 คน <strong>กำเนิดวิทย์</strong> เน้นฟิสิกส์ (9 คน) และเคมี (8 คน) ซึ่งทับซ้อนกับวิชาที่มหิดลฯ ทำได้ดีเช่นกัน — แกน Y ของกราฟทั้งสองกำหนดให้เท่ากัน เพื่อการเปรียบเทียบที่ถูกต้อง
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div id="sec-compare" class="section">
+  <div class="sec-title">มหิดลวิทยานุสรณ์ vs กำเนิดวิทย์</div>
+  <div class="sc2">
+    <div class="sc-card m">
+      <h3>🔵 มหิดลวิทยานุสรณ์</h3>
+      <div class="sc-row"><span>ปีแรกที่ส่ง</span><span class="v">2547 (2004)</span></div>
+      <div class="sc-row"><span>ผู้แทนทั้งหมด</span><span class="v">167 คน (8 วิชา)</span></div>
+      <div class="sc-row"><span>เฉลี่ยต่อปี</span><span class="v">7.6 คน</span></div>
+      <div class="sc-row"><span>อัตราได้เหรียญ</span><span class="v" style="color:var(--up)">95%</span></div>
+      <div class="sc-row"><span>เหรียญทอง / เงิน / ทองแดง</span><span class="v">38 / 69 / 49</span></div>
+      <div class="sc-row"><span>สัดส่วนเหรียญทอง</span><span class="v">23%</span></div>
+      <div class="sc-row"><span>แนวโน้ม (slope)</span><span class="v" style="color:var(--up)">+0.28/ปี ★★★</span></div>
+    </div>
+    <div class="sc-card k">
+      <h3>🟠 กำเนิดวิทย์</h3>
+      <div class="sc-row"><span>ปีแรกที่ส่ง</span><span class="v">2560 (2017)</span></div>
+      <div class="sc-row"><span>ผู้แทนทั้งหมด</span><span class="v">40 คน (7 วิชา)</span></div>
+      <div class="sc-row"><span>เฉลี่ยต่อปี</span><span class="v">4.4 คน</span></div>
+      <div class="sc-row"><span>อัตราได้เหรียญ</span><span class="v" style="color:var(--up)">100%</span></div>
+      <div class="sc-row"><span>เหรียญทอง / เงิน / ทองแดง</span><span class="v">4 / 24 / 11</span></div>
+      <div class="sc-row"><span>สัดส่วนเหรียญทอง</span><span class="v">10% → <span style="color:var(--kamnoed);font-weight:800">3 ทองในปี 2568!</span></span></div>
+      <div class="sc-row"><span>แนวโน้ม (slope)</span><span class="v" style="color:var(--up)">+0.14/ปี ★★</span></div>
+    </div>
+  </div>
+  <div class="card chart-tall">
+    <h3>จำนวนผู้แทนต่อปี: มหิดลฯ vs กำเนิดวิทย์ (รวมทุกวิชา)</h3>
+    <div class="chart-wrap"><canvas id="c-cmp-overall"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>เปรียบเทียบแยกวิชา</h3>
+    <div class="ctrl">
+      <button class="sel" onclick="updCmp('all',this)">ทุกวิชา</button>
+      <button onclick="updCmp('คณิตศาสตร์',this)">คณิตศาสตร์</button>
+      <button onclick="updCmp('คอมพิวเตอร์',this)">คอมพิวเตอร์</button>
+      <button onclick="updCmp('ชีววิทยา',this)">ชีววิทยา</button>
+      <button onclick="updCmp('ฟิสิกส์',this)">ฟิสิกส์</button>
+      <button onclick="updCmp('เคมี',this)">เคมี</button>
+      <button onclick="updCmp('ดาราศาสตร์และฟิสิกส์ดาราศาสตร์',this)">IOAA</button>
+      <button onclick="updCmp('วิทยาศาสตร์โลกและอวกาศ',this)">IESO</button>
+    </div>
+    <div class="chart-wrap"><canvas id="c-cmp-subj"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong class="hi">ปี 2568 — เหตุการณ์ที่น่าติดตาม:</strong> กำเนิดวิทย์ได้รับ 3 เหรียญทอง (IPhO, IChO, IBO) เป็นปีแรกที่มีเหรียญทองมากกว่ามหิดลฯ ในปีเดียวกัน ขณะที่มหิดลฯ ส่งได้ 4 คน (เงิน 3, ทองแดง 1) <strong>มหิดลฯ ยังนำด้านสะสม</strong> (38 vs 4 ทองทั้งหมด) แต่ช่องว่างในวิชาฟิสิกส์ เคมี และชีววิทยากำลังแคบลง IOAA ยังเป็นรายการที่มหิดลฯ มีความโดดเด่นชัดเจน
+  </div>
+</div>
+
+<!-- TREND TABLE -->
+<div id="sec-trendtable" class="section">
+  <div class="sec-title">แนวโน้มโรงเรียน — วิเคราะห์ด้วย Linear Regression</div>
+  <div class="trend-cols">
+    <div class="trend-col up"><h3>📈 แนวโน้มเพิ่มขึ้น (p &lt; 0.05)</h3><div id="up-list"></div></div>
+    <div class="trend-col dn"><h3>📉 แนวโน้มลดลง (p &lt; 0.05)</h3><div id="dn-list"></div></div>
+    <div class="trend-col st"><h3>➡️ ทรงตัว / ไม่มีแนวโน้มชัดเจน</h3><div id="st-list"></div></div>
+  </div>
+  <div class="card">
+    <h3>ตารางสรุปแนวโน้มทุกโรงเรียน</h3>
+    <table class="ttable"><thead><tr>
+      <th>โรงเรียน</th><th>ผู้แทนสะสม</th><th>slope (คน/ปี)</th><th>R²</th><th>p-value</th><th>แนวโน้ม</th>
+    </tr></thead><tbody id="trend-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- MAHIDOL DEEP -->
+<div id="sec-mahidol" class="section">
+  <div class="sec-title">วิเคราะห์เชิงลึก: มหิดลวิทยานุสรณ์ (2547–2568)</div>
+  <div class="g4" style="margin-bottom:18px">
+    <div class="kpi"><div class="kpi-n">167</div><div class="kpi-l">ผู้แทนรวมทุกวิชา (2547–2568)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">38</div><div class="kpi-l">เหรียญทอง (23%)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--silver)">69</div><div class="kpi-l">เหรียญเงิน (41%)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--bronze)">49</div><div class="kpi-l">เหรียญทองแดง (29%)</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <h3>จำนวนผู้แทนมหิดลฯ ต่อปี พร้อมประเภทเหรียญ</h3>
+      <div class="chart-wrap chart-tall"><canvas id="c-m-medals"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>เหรียญมหิดลฯ แยกวิชา (สะสมทั้งหมด)</h3>
+      <div class="chart-wrap"><canvas id="c-m-subj-medal"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>สัดส่วนที่นั่งผู้แทนมหิดลฯ ต่อโควต้าวิชา (%) — เลือกวิชา</h3>
+    <div class="ctrl">
+      <select id="share-sel" onchange="updShare()">
+        <option>ชีววิทยา</option><option>ฟิสิกส์</option><option>เคมี</option>
+        <option>คอมพิวเตอร์</option><option>คณิตศาสตร์</option>
+        <option>ดาราศาสตร์และฟิสิกส์ดาราศาสตร์</option>
+        <option>วิทยาศาสตร์โลกและอวกาศ</option>
+        <option>ภูมิศาสตร์</option>
+      </select>
+      <span id="share-note" style="font-size:0.79rem;color:var(--mut);font-weight:600;margin-left:6px"></span>
+    </div>
+    <div class="chart-wrap"><canvas id="c-m-share"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>ตารางข้อมูลเชิงกลยุทธ์</h3>
+    <table class="strat-table">
+      <thead><tr><th>ตัวชี้วัด</th><th>ค่า / ผล</th><th>ข้อสังเกตและข้อเสนอแนะ</th></tr></thead>
+      <tbody>
+        <tr><td>แนวโน้มภาพรวม (slope)</td><td><span class="pill-g">+0.28/ปี</span></td><td>สูงสุดในบรรดาทุกโรงเรียน (R²=0.49) — ทิศทางที่ดีต่อเนื่อง</td></tr>
+        <tr><td>อัตราได้เหรียญรวม</td><td><span class="pill-g">95%</span></td><td>แทบทุกคนที่ได้รับการคัดเลือกสร้างผลงานระดับนานาชาติ</td></tr>
+        <tr><td>ชีววิทยา (IBO)</td><td><span class="pill-g">สัดส่วนทอง 40% (12/30)</span></td><td>วิชาที่สร้างผลงานเหรียญทองได้สม่ำเสมอที่สุด ควรรักษาต่อเนื่อง</td></tr>
+        <tr><td>ฟิสิกส์ (IPhO)</td><td><span class="pill-g">สัดส่วนทอง 41% (11/27)</span></td><td>แข็งแกร่งมากในอดีต — ปัจจุบันมีการแข่งขันจากกำเนิดวิทย์เพิ่มขึ้น</td></tr>
+        <tr><td>เคมี (IChO)</td><td><span class="pill-y">สัดส่วนทอง 21% (5/24)</span></td><td>มีศักยภาพพัฒนาเพิ่มเติม — ปัจจุบันกำเนิดวิทย์มีพัฒนาการในวิชานี้</td></tr>
+        <tr><td>IOAA (ดาราศาสตร์ฯ)</td><td><span class="pill-g">29 คน จาก quota 5/ปี</span></td><td>รายการที่มหิดลฯ มีความโดดเด่นเฉพาะทาง ควรสร้าง pipeline ต่อเนื่อง</td></tr>
+        <tr><td>IESO (วิทยาศาสตร์โลกฯ)</td><td><span class="pill-g">11 คน จาก quota 4/ปี</span></td><td>รายการที่มหิดลฯ มีความโดดเด่นเฉพาะทาง ควรขยายฐานนักเรียน</td></tr>
+        <tr><td>iGeo (ภูมิศาสตร์)</td><td><span class="pill-y">12 คน จาก quota 4/ปี</span></td><td>มีโอกาสพัฒนาต่อเนื่อง ปัจจุบันได้สัดส่วน 25–75% ต่อปี</td></tr>
+        <tr><td>คณิตศาสตร์ (IMO)</td><td><span class="pill-b">13 คน จาก quota 6/ปี</span></td><td>วิชาที่มีโอกาสพัฒนาเพิ่มเติมมากที่สุด — เฉลี่ยปีละ 0.6 คน</td></tr>
+        <tr><td>ปีที่มีผลงานสูงสุด</td><td>2554, 2562 (12 คน)</td><td>เป้าหมายที่เคยทำได้จริง รวมวิชาพิเศษ</td></tr>
+        <tr><td>ช่วง 2563–2568 (ล่าสุด)</td><td><span class="pill-y">3–7 คน/ปี</span></td><td>ยังต่ำกว่าค่าเฉลี่ยช่วงพีค (2549–2562: ~9.5 คน/ปี)</td></tr>
+        <tr><td>ปี 2568 (ล่าสุด)</td><td><span class="pill-y">4 คน, เงิน 3 ทองแดง 1</span></td><td>กำเนิดวิทย์ได้ 3 ทองในปีเดียวกัน — สัญญาณกระตุ้นให้เร่งพัฒนา</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight">
+    <strong>ข้อเสนอแนะเชิงกลยุทธ์ 5 ประการ:</strong><br>
+    1. <strong>รักษาความเป็นเลิศใน IOAA และ IESO</strong> — สองรายการนี้คือจุดแข็งเฉพาะทางของมหิดลฯ ควรสนับสนุน pipeline นักเรียนดาราศาสตร์อย่างต่อเนื่อง<br>
+    2. <strong>เพิ่มความเข้มข้นในชีววิทยาและฟิสิกส์</strong> — วิชาที่สร้างเหรียญทองได้สม่ำเสมอ แต่กำเนิดวิทย์กำลังพัฒนาอย่างต่อเนื่อง<br>
+    3. <strong>พัฒนาศักยภาพด้านเคมีและคอมพิวเตอร์</strong> — ทั้งสองวิชามีโอกาสเพิ่มเหรียญทอง โดยเฉพาะเคมีที่มหิดลฯ เคยทำได้ดีในช่วง 2549–2554<br>
+    4. <strong>ขยายฐานนักเรียนคณิตศาสตร์</strong> — รายการ IMO มีโควต้า 6 คน/ปี แต่ปัจจุบันส่งได้เฉลี่ยเพียง 0.6 คน/ปี เป็นพื้นที่ที่มีโอกาสพัฒนาได้มาก<br>
+    5. <strong>ตั้งเป้าหมายระยะกลาง 7–10 คน/ปี</strong> (รวมวิชาพิเศษ) โดยเน้นทั้งจำนวนและคุณภาพเหรียญ — ตัวเลขนี้เคยทำได้จริงในช่วง 2549–2562
+  </div>
+</div>
+
+</main>
+<script>
+const D = {"years": [1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "subjects": ["คณิตศาสตร์", "คอมพิวเตอร์", "ชีววิทยา", "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์", "ฟิสิกส์", "ภูมิศาสตร์", "วิทยาศาสตร์โลกและอวกาศ", "เคมี"], "core": ["คณิตศาสตร์", "คอมพิวเตอร์", "ชีววิทยา", "ฟิสิกส์", "เคมี"], "topSchools": ["เตรียมอุดมศึกษา", "มหิดลวิทยานุสรณ์", "สวนกุหลาบวิทยาลัย", "กำเนิดวิทย์", "กรุงเทพคริสเตียนวิทยาลัย", "บดินทรเดชา (สิงห์ สิงหเสนี)", "สาธิตจุฬาฯ (ฝ่ายมัธยม)", "สามเสนวิทยาลัย"], "quota": {"คณิตศาสตร์": 6, "ฟิสิกส์": 5, "เคมี": 4, "ชีววิทยา": 4, "คอมพิวเตอร์": 4, "ภูมิศาสตร์": 4, "วิทยาศาสตร์โลกและอวกาศ": 4, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": 5, "ดาราศาสตร์": 3}, "totalPerYear": {"1989": 6, "1990": 15, "1991": 22, "1992": 23, "1993": 23, "1994": 23, "1995": 23, "1996": 23, "1997": 23, "1998": 23, "1999": 23, "2000": 23, "2001": 23, "2002": 23, "2003": 23, "2004": 24, "2005": 23, "2006": 25, "2007": 24, "2008": 26, "2009": 24, "2010": 27, "2011": 26, "2012": 22, "2013": 24, "2014": 27, "2015": 30, "2016": 29, "2017": 32, "2018": 32, "2019": 31, "2020": 23, "2021": 29, "2022": 29, "2023": 30, "2024": 32, "2025": 23}, "subjYearTotal": {"คณิตศาสตร์": {"1989": 6, "1990": 6, "1991": 6, "1992": 6, "1993": 6, "1994": 6, "1995": 6, "1996": 6, "1997": 6, "1998": 6, "1999": 6, "2000": 6, "2001": 6, "2002": 6, "2003": 6, "2004": 6, "2005": 6, "2006": 6, "2007": 6, "2008": 6, "2009": 6, "2010": 6, "2011": 6, "2012": 6, "2013": 6, "2014": 6, "2015": 6, "2016": 6, "2017": 6, "2018": 6, "2019": 6, "2020": 6, "2021": 6, "2022": 6, "2023": 6, "2024": 6, "2025": 6}, "คอมพิวเตอร์": {"1991": 3, "1992": 4, "1993": 4, "1994": 4, "1995": 4, "1996": 4, "1997": 4, "1998": 4, "1999": 4, "2000": 4, "2001": 4, "2002": 4, "2003": 4, "2004": 4, "2005": 4, "2006": 4, "2007": 4, "2008": 4, "2009": 4, "2010": 4, "2011": 4, "2012": 4, "2013": 4, "2014": 4, "2015": 4, "2016": 4, "2017": 4, "2018": 4, "2019": 4, "2020": 4, "2021": 4, "2022": 4, "2023": 4, "2024": 4, "2025": 4}, "ชีววิทยา": {"1991": 4, "1992": 4, "1993": 4, "1994": 4, "1995": 4, "1996": 4, "1997": 4, "1998": 4, "1999": 4, "2000": 4, "2001": 4, "2002": 4, "2003": 4, "2004": 4, "2005": 4, "2006": 4, "2007": 4, "2008": 4, "2009": 4, "2010": 4, "2011": 4, "2012": 4, "2013": 4, "2014": 4, "2015": 4, "2016": 4, "2017": 4, "2018": 4, "2019": 4, "2020": 4, "2021": 4, "2022": 4, "2023": 4, "2024": 4, "2025": 4}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"2004": 1, "2006": 2, "2007": 1, "2008": 3, "2009": 1, "2010": 2, "2011": 2, "2013": 1, "2014": 3, "2015": 3, "2016": 1, "2017": 3, "2018": 2, "2019": 3, "2022": 2, "2023": 3, "2024": 3}, "ฟิสิกส์": {"1990": 5, "1991": 5, "1992": 5, "1993": 5, "1994": 5, "1995": 5, "1996": 5, "1997": 5, "1998": 5, "1999": 5, "2000": 5, "2001": 5, "2002": 5, "2003": 5, "2004": 5, "2005": 5, "2006": 5, "2007": 5, "2008": 5, "2009": 5, "2010": 5, "2011": 5, "2012": 5, "2013": 5, "2014": 5, "2015": 5, "2016": 5, "2017": 5, "2018": 5, "2019": 5, "2020": 5, "2021": 5, "2022": 5, "2023": 5, "2024": 5, "2025": 5}, "ภูมิศาสตร์": {"2015": 4, "2016": 4, "2017": 4, "2018": 4, "2019": 4, "2021": 4, "2022": 4, "2023": 4, "2024": 4}, "วิทยาศาสตร์โลกและอวกาศ": {"2010": 2, "2011": 1, "2014": 1, "2016": 1, "2017": 2, "2018": 3, "2019": 1, "2021": 2, "2024": 2}, "เคมี": {"1990": 4, "1991": 4, "1992": 4, "1993": 4, "1994": 4, "1995": 4, "1996": 4, "1997": 4, "1998": 4, "1999": 4, "2000": 4, "2001": 4, "2002": 4, "2003": 4, "2004": 4, "2005": 4, "2006": 4, "2007": 4, "2008": 4, "2009": 4, "2010": 4, "2011": 4, "2012": 3, "2013": 4, "2014": 4, "2015": 4, "2016": 4, "2017": 4, "2018": 4, "2019": 4, "2020": 4, "2021": 4, "2022": 4, "2023": 4, "2024": 4, "2025": 4}}, "schoolYearData": {"เตรียมอุดมศึกษา": {"1989": 1, "1990": 4, "1991": 10, "1992": 9, "1993": 11, "1994": 7, "1995": 6, "1996": 4, "1997": 9, "1998": 8, "1999": 7, "2000": 9, "2001": 10, "2002": 10, "2003": 9, "2004": 9, "2005": 10, "2006": 10, "2007": 12, "2008": 10, "2009": 9, "2010": 9, "2011": 8, "2012": 11, "2013": 6, "2014": 10, "2015": 10, "2016": 11, "2017": 15, "2018": 11, "2019": 12, "2020": 11, "2021": 14, "2022": 9, "2023": 14, "2024": 9, "2025": 6}, "มหิดลวิทยานุสรณ์": {"2004": 4, "2005": 4, "2006": 10, "2007": 5, "2008": 9, "2009": 8, "2010": 9, "2011": 12, "2012": 6, "2013": 10, "2014": 10, "2015": 10, "2016": 9, "2017": 11, "2018": 9, "2019": 12, "2020": 3, "2021": 4, "2022": 7, "2023": 4, "2024": 7, "2025": 4}, "สวนกุหลาบวิทยาลัย": {"1990": 2, "1991": 1, "1992": 1, "1993": 3, "1994": 2, "1995": 7, "1996": 8, "1997": 3, "1998": 7, "1999": 4, "2000": 6, "2001": 6, "2002": 4, "2003": 3, "2004": 3, "2005": 3, "2006": 1, "2007": 1, "2008": 2, "2009": 1, "2010": 2, "2011": 2, "2012": 2, "2013": 3, "2014": 1, "2015": 4, "2016": 5, "2017": 2, "2018": 1, "2019": 1, "2020": 1, "2021": 2, "2022": 2, "2023": 1, "2024": 1, "2025": 2}, "กำเนิดวิทย์": {"2017": 3, "2018": 7, "2019": 3, "2020": 2, "2021": 3, "2022": 6, "2023": 4, "2024": 6, "2025": 6}, "กรุงเทพคริสเตียนวิทยาลัย": {"1992": 1, "2004": 1, "2007": 1, "2008": 2, "2009": 1, "2010": 2, "2011": 1, "2012": 1, "2013": 2, "2014": 3, "2015": 1, "2016": 1, "2018": 1, "2019": 2, "2020": 4, "2021": 1, "2022": 1}, "บดินทรเดชา (สิงห์ สิงหเสนี)": {"1991": 3, "1992": 2, "1993": 3, "1994": 7, "1996": 3, "1997": 4, "1998": 1, "1999": 1, "2000": 1, "2002": 1, "2025": 1}, "สาธิตจุฬาฯ (ฝ่ายมัธยม)": {"1990": 1, "1991": 2, "2001": 3, "2002": 1, "2006": 3, "2007": 3, "2008": 1, "2009": 3, "2010": 1, "2012": 1, "2013": 1, "2014": 1, "2015": 1, "2016": 1, "2017": 1, "2021": 1, "2023": 1}, "สามเสนวิทยาลัย": {"1990": 1, "1992": 3, "1993": 1, "1994": 2, "1995": 3, "1996": 1, "1997": 1, "1999": 1, "2000": 1, "2003": 3, "2014": 1, "2023": 1, "2024": 1, "2025": 2}}, "mYr": {"2004": 4, "2005": 4, "2006": 10, "2007": 5, "2008": 9, "2009": 8, "2010": 9, "2011": 12, "2012": 6, "2013": 10, "2014": 10, "2015": 10, "2016": 9, "2017": 11, "2018": 9, "2019": 12, "2020": 3, "2021": 4, "2022": 7, "2023": 4, "2024": 7, "2025": 4}, "kYr": {"2017": 3, "2018": 7, "2019": 3, "2020": 2, "2021": 3, "2022": 6, "2023": 4, "2024": 6, "2025": 6}, "mSubjYr": {"คณิตศาสตร์": {"2004": 2, "2005": 1, "2006": 1, "2010": 1, "2011": 1, "2014": 1, "2015": 1, "2016": 1, "2018": 1, "2019": 1, "2022": 1, "2023": 1}, "คอมพิวเตอร์": {"2005": 1, "2006": 1, "2007": 1, "2008": 2, "2009": 2, "2011": 1, "2012": 1, "2013": 2, "2015": 1, "2016": 2, "2017": 2, "2019": 1, "2020": 1, "2021": 1, "2022": 1, "2025": 1}, "ชีววิทยา": {"2005": 1, "2006": 2, "2007": 1, "2011": 4, "2012": 2, "2013": 3, "2014": 1, "2015": 1, "2016": 2, "2017": 2, "2018": 2, "2019": 3, "2020": 1, "2021": 1, "2022": 1, "2024": 2, "2025": 1}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"2004": 1, "2006": 2, "2007": 1, "2008": 3, "2009": 1, "2010": 2, "2011": 2, "2013": 1, "2014": 3, "2015": 3, "2016": 1, "2017": 1, "2019": 3, "2022": 2, "2023": 1, "2024": 2}, "ฟิสิกส์": {"2005": 1, "2006": 1, "2007": 1, "2008": 2, "2009": 3, "2010": 3, "2011": 1, "2012": 2, "2013": 2, "2014": 3, "2015": 2, "2016": 1, "2017": 1, "2018": 1, "2019": 1, "2020": 1, "2025": 1}, "ภูมิศาสตร์": {"2015": 1, "2016": 1, "2017": 2, "2018": 3, "2019": 2, "2022": 2, "2024": 1}, "วิทยาศาสตร์โลกและอวกาศ": {"2010": 2, "2011": 1, "2014": 1, "2016": 1, "2017": 1, "2018": 2, "2021": 2, "2024": 1}, "เคมี": {"2004": 1, "2006": 3, "2007": 1, "2008": 2, "2009": 2, "2010": 1, "2011": 2, "2012": 1, "2013": 2, "2014": 1, "2015": 1, "2017": 2, "2019": 1, "2023": 2, "2024": 1, "2025": 1}}, "kSubjYr": {"คณิตศาสตร์": {"2018": 1, "2019": 1, "2025": 1}, "คอมพิวเตอร์": {"2018": 2, "2019": 1, "2020": 1, "2022": 1}, "ชีววิทยา": {"2023": 1, "2024": 1, "2025": 2}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"2017": 2, "2018": 2, "2023": 2, "2024": 1}, "ฟิสิกส์": {"2018": 1, "2021": 2, "2022": 3, "2023": 1, "2024": 1, "2025": 1}, "ภูมิศาสตร์": {}, "วิทยาศาสตร์โลกและอวกาศ": {"2017": 1, "2018": 1, "2019": 1, "2024": 1}, "เคมี": {"2020": 1, "2021": 1, "2022": 2, "2024": 2, "2025": 2}}, "mMedalsYr": {"2004": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 1, "เข้าร่วม": 1, "เงิน": 1}, "2005": {"ทอง": 2, "ทองแดง": 1, "เกียรติคุณ": 1, "เข้าร่วม": 0, "เงิน": 0}, "2006": {"ทอง": 3, "ทองแดง": 4, "เกียรติคุณ": 0, "เข้าร่วม": 1, "เงิน": 2}, "2007": {"ทอง": 1, "ทองแดง": 1, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 3}, "2008": {"ทอง": 0, "ทองแดง": 2, "เกียรติคุณ": 2, "เข้าร่วม": 0, "เงิน": 5}, "2009": {"ทอง": 2, "ทองแดง": 0, "เกียรติคุณ": 1, "เข้าร่วม": 0, "เงิน": 5}, "2010": {"ทอง": 4, "ทองแดง": 1, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 4}, "2011": {"ทอง": 6, "ทองแดง": 2, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 4}, "2012": {"ทอง": 3, "ทองแดง": 3, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 0}, "2013": {"ทอง": 4, "ทองแดง": 1, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 5}, "2014": {"ทอง": 3, "ทองแดง": 3, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 4}, "2015": {"ทอง": 1, "ทองแดง": 4, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 5}, "2016": {"ทอง": 0, "ทองแดง": 6, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 3}, "2017": {"ทอง": 3, "ทองแดง": 4, "เกียรติคุณ": 0, "เข้าร่วม": 1, "เงิน": 3}, "2018": {"ทอง": 1, "ทองแดง": 3, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 5}, "2019": {"ทอง": 2, "ทองแดง": 5, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 5}, "2020": {"ทอง": 0, "ทองแดง": 3, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 0}, "2021": {"ทอง": 2, "ทองแดง": 1, "เกียรติคุณ": 0, "เข้าร่วม": 1, "เงิน": 0}, "2022": {"ทอง": 1, "ทองแดง": 2, "เกียรติคุณ": 0, "เข้าร่วม": 1, "เงิน": 3}, "2023": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 1, "เข้าร่วม": 0, "เงิน": 2}, "2024": {"ทอง": 0, "ทองแดง": 0, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 7}, "2025": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 0, "เข้าร่วม": 0, "เงิน": 3}}, "kMedalsYr": {"2017": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 0, "เงิน": 2}, "2018": {"ทอง": 0, "ทองแดง": 3, "เกียรติคุณ": 0, "เงิน": 4}, "2019": {"ทอง": 1, "ทองแดง": 0, "เกียรติคุณ": 0, "เงิน": 2}, "2020": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 0, "เงิน": 1}, "2021": {"ทอง": 0, "ทองแดง": 0, "เกียรติคุณ": 0, "เงิน": 3}, "2022": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 0, "เงิน": 5}, "2023": {"ทอง": 0, "ทองแดง": 1, "เกียรติคุณ": 0, "เงิน": 3}, "2024": {"ทอง": 0, "ทองแดง": 4, "เกียรติคุณ": 0, "เงิน": 2}, "2025": {"ทอง": 3, "ทองแดง": 0, "เกียรติคุณ": 1, "เงิน": 2}}, "mSubjMedal": {"คณิตศาสตร์": {"ทอง": 3, "ทองแดง": 2, "เกียรติคุณ": 3, "เงิน": 5}, "คอมพิวเตอร์": {"ทอง": 3, "ทองแดง": 10, "เข้าร่วม": 2, "เงิน": 6}, "ชีววิทยา": {"ทอง": 12, "ทองแดง": 4, "เงิน": 14}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"ทอง": 2, "ทองแดง": 16, "เกียรติคุณ": 3, "เข้าร่วม": 2, "เงิน": 6}, "ฟิสิกส์": {"ทอง": 11, "ทองแดง": 4, "เงิน": 12}, "ภูมิศาสตร์": {"ทองแดง": 9, "เข้าร่วม": 1, "เงิน": 2}, "วิทยาศาสตร์โลกและอวกาศ": {"ทอง": 2, "ทองแดง": 2, "เงิน": 7}, "เคมี": {"ทอง": 5, "ทองแดง": 2, "เงิน": 17}}, "kSubjMedal": {"คณิตศาสตร์": {"ทอง": 1, "เกียรติคุณ": 1, "เงิน": 1}, "คอมพิวเตอร์": {"ทองแดง": 3, "เงิน": 2}, "ชีววิทยา": {"ทอง": 1, "ทองแดง": 1, "เงิน": 2}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"ทองแดง": 2, "เงิน": 5}, "ฟิสิกส์": {"ทอง": 1, "ทองแดง": 2, "เงิน": 6}, "วิทยาศาสตร์โลกและอวกาศ": {"ทองแดง": 2, "เงิน": 2}, "เคมี": {"ทอง": 1, "ทองแดง": 1, "เงิน": 6}}, "trends": [{"school": "เตรียมอุดมศึกษา", "total": 340, "slope": 0.136, "p": 0.001, "direction": "up", "r2": 0.278}, {"school": "มหิดลวิทยานุสรณ์", "total": 167, "slope": 0.284, "p": 0.0, "direction": "up", "r2": 0.493}, {"school": "สวนกุหลาบวิทยาลัย", "total": 100, "slope": -0.058, "p": 0.058, "direction": "down", "r2": 0.099}, {"school": "กำเนิดวิทย์", "total": 40, "slope": 0.136, "p": 0.0, "direction": "up", "r2": 0.488}, {"school": "บดินทรเดชา (สิงห์ สิงหเสนี)", "total": 27, "slope": -0.07, "p": 0.001, "direction": "down", "r2": 0.254}, {"school": "สาธิตจุฬาฯ (ฝ่ายมัธยม)", "total": 26, "slope": 0.002, "p": 0.876, "direction": "stable", "r2": 0.001}, {"school": "กรุงเทพคริสเตียนวิทยาลัย", "total": 26, "slope": 0.04, "p": 0.006, "direction": "up", "r2": 0.196}, {"school": "สามเสนวิทยาลัย", "total": 22, "slope": -0.026, "p": 0.067, "direction": "down", "r2": 0.093}, {"school": "หาดใหญ่วิทยาลัย", "total": 12, "slope": -0.034, "p": 0.0, "direction": "down", "r2": 0.353}, {"school": "เซนต์คาเบรียล", "total": 12, "slope": 0.007, "p": 0.433, "direction": "stable", "r2": 0.018}, {"school": "อัสสัมชัญ", "total": 12, "slope": -0.005, "p": 0.672, "direction": "stable", "r2": 0.005}, {"school": "สาธิต มศว. ปทุมวัน", "total": 9, "slope": -0.001, "p": 0.917, "direction": "stable", "r2": 0.0}, {"school": "วัดสุทธิวราราม", "total": 8, "slope": -0.011, "p": 0.199, "direction": "down", "r2": 0.047}, {"school": "มงฟอร์ตวิทยาลัย", "total": 7, "slope": -0.002, "p": 0.79, "direction": "stable", "r2": 0.002}, {"school": "เตรียมอุดมศึกษาพัฒนาการ", "total": 7, "slope": -0.001, "p": 0.909, "direction": "stable", "r2": 0.0}, {"school": "เบ็ญจะมะมหาราช", "total": 6, "slope": -0.017, "p": 0.002, "direction": "down", "r2": 0.251}, {"school": "สาธิตมศว. ปทุมวัน", "total": 5, "slope": 0.005, "p": 0.493, "direction": "stable", "r2": 0.014}, {"school": "วิทยาลัยเทคโนโลยีอุตสาหกรรม", "total": 4, "slope": -0.01, "p": 0.085, "direction": "down", "r2": 0.082}, {"school": "เทพศิรินทร์", "total": 3, "slope": 0.001, "p": 0.785, "direction": "stable", "r2": 0.002}, {"school": "ยุพราชวิทยาลัย", "total": 3, "slope": -0.009, "p": 0.024, "direction": "stable", "r2": 0.138}, {"school": "พิริยาลัย", "total": 3, "slope": -0.006, "p": 0.135, "direction": "stable", "r2": 0.063}, {"school": "สาธิต ม.เกษตรศาสตร์", "total": 3, "slope": -0.004, "p": 0.381, "direction": "stable", "r2": 0.022}, {"school": "คณะราษฎรบำรุง ยะลา", "total": 3, "slope": -0.012, "p": 0.004, "direction": "down", "r2": 0.215}], "mShareQuota": {"คณิตศาสตร์": {"2004": 33.3, "2005": 16.7, "2006": 16.7, "2010": 16.7, "2011": 16.7, "2014": 16.7, "2015": 16.7, "2016": 16.7, "2018": 16.7, "2019": 16.7, "2022": 16.7, "2023": 16.7}, "คอมพิวเตอร์": {"2005": 25.0, "2006": 25.0, "2007": 25.0, "2008": 50.0, "2009": 50.0, "2011": 25.0, "2012": 25.0, "2013": 50.0, "2015": 25.0, "2016": 50.0, "2017": 50.0, "2019": 25.0, "2020": 25.0, "2021": 25.0, "2022": 25.0, "2025": 25.0}, "ชีววิทยา": {"2005": 25.0, "2006": 50.0, "2007": 25.0, "2011": 100.0, "2012": 50.0, "2013": 75.0, "2014": 25.0, "2015": 25.0, "2016": 50.0, "2017": 50.0, "2018": 50.0, "2019": 75.0, "2020": 25.0, "2021": 25.0, "2022": 25.0, "2024": 50.0, "2025": 25.0}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"2004": 20.0, "2006": 40.0, "2007": 20.0, "2008": 60.0, "2009": 20.0, "2010": 40.0, "2011": 40.0, "2013": 20.0, "2014": 60.0, "2015": 60.0, "2016": 20.0, "2017": 20.0, "2019": 60.0, "2022": 40.0, "2023": 20.0, "2024": 40.0}, "ฟิสิกส์": {"2005": 20.0, "2006": 20.0, "2007": 20.0, "2008": 40.0, "2009": 60.0, "2010": 60.0, "2011": 20.0, "2012": 40.0, "2013": 40.0, "2014": 60.0, "2015": 40.0, "2016": 20.0, "2017": 20.0, "2018": 20.0, "2019": 20.0, "2020": 20.0, "2025": 20.0}, "ภูมิศาสตร์": {"2015": 25.0, "2016": 25.0, "2017": 50.0, "2018": 75.0, "2019": 50.0, "2022": 50.0, "2024": 25.0}, "วิทยาศาสตร์โลกและอวกาศ": {"2010": 50.0, "2011": 25.0, "2014": 25.0, "2016": 25.0, "2017": 25.0, "2018": 50.0, "2021": 50.0, "2024": 25.0}, "เคมี": {"2004": 25.0, "2006": 75.0, "2007": 25.0, "2008": 50.0, "2009": 50.0, "2010": 25.0, "2011": 50.0, "2012": 25.0, "2013": 50.0, "2014": 25.0, "2015": 25.0, "2017": 50.0, "2019": 25.0, "2023": 50.0, "2024": 25.0, "2025": 25.0}}};
+
+// ---- Chart.js global defaults: เพิ่มความเข้มตัวอักษร ----
+Chart.defaults.color = '#1e3358';
+Chart.defaults.font.family = "'Sarabun', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.font.weight = '600';
+
+const SC={
+  'เตรียมอุดมศึกษา':'#145228','มหิดลวิทยานุสรณ์':'#1550a0',
+  'สวนกุหลาบวิทยาลัย':'#6d28d9','กำเนิดวิทย์':'#b03500',
+  'กรุงเทพคริสเตียนวิทยาลัย':'#a16207','บดินทรเดชา (สิงห์ สิงหเสนี)':'#0369a1',
+  'สาธิตจุฬาฯ (ฝ่ายมัธยม)':'#0d7465','สามเสนวิทยาลัย':'#9d174d',
+};
+const SubjC={
+  'คณิตศาสตร์':'#1e40af','คอมพิวเตอร์':'#15803d','ชีววิทยา':'#b45309',
+  'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์':'#6d28d9',
+  'ฟิสิกส์':'#be185d','ภูมิศาสตร์':'#c2410c',
+  'วิทยาศาสตร์โลกและอวกาศ':'#0e7490','เคมี':'#b91c1c',
+};
+
+const inited={};
+function showSec(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(!inited[id]){initSec(id);inited[id]=true;}
+}
+function initSec(id){
+  if(id==='overview')initOverview();
+  if(id==='school')initSchool();
+  if(id==='subject')initSubject();
+  if(id==='compare')initCompare();
+  if(id==='trendtable')initTrends();
+  if(id==='mahidol')initMahidol();
+}
+function gv(o,y){return(o[String(y)]||0);}
+
+const GRIDOPT={color:'rgba(0,0,0,.09)'};
+const tickStyle={color:'#1e3358',font:{size:12,weight:'600'}};
+const baseOpts={
+  responsive:true,interaction:{mode:'index'},
+  plugins:{legend:{position:'bottom',labels:{boxWidth:13,padding:12,font:{size:12,weight:'700'},color:'#0d1b35'}}},
+  scales:{
+    x:{grid:GRIDOPT,ticks:{...tickStyle}},
+    y:{grid:GRIDOPT,ticks:{...tickStyle}}
+  }
+};
+
+function lineDs(label,obj,years,color,extra={}){
+  return{label,data:years.map(y=>gv(obj,y)),
+    borderColor:color,backgroundColor:color+'22',
+    borderWidth:2,tension:.3,fill:false,pointRadius:3,...extra};
+}
+
+// Datalabels plugin for bar charts
+const datalabelPlugin={
+  id:'outside-labels',
+  afterDatasetsDraw(chart){
+    const {ctx}=chart;
+    chart.data.datasets.forEach((ds,di)=>{
+      const meta=chart.getDatasetMeta(di);
+      if(meta.type!=='bar')return;
+      meta.data.forEach((bar,i)=>{
+        const val=ds.data[i];
+        if(!val)return;
+        ctx.save();
+        ctx.font='700 12px "Sarabun",sans-serif';
+        ctx.fillStyle='#0d1b35';
+        ctx.textAlign='center';
+        ctx.textBaseline='bottom';
+        ctx.fillText(val,bar.x,bar.y-3);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+// OVERVIEW
+function initOverview(){
+  const yr=D.years;
+  new Chart(document.getElementById('c-stacked'),{
+    type:'line',
+    data:{labels:yr,datasets:D.topSchools.map(s=>({
+      label:s,data:yr.map(y=>gv(D.schoolYearData[s],y)),
+      borderColor:SC[s],backgroundColor:(SC[s]||'#888')+'30',
+      borderWidth:2,tension:.3,fill:true,pointRadius:0
+    }))},
+    options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{stacked:true,grid:GRIDOPT,ticks:tickStyle}}}
+  });
+  const t10=D.trends.slice(0,10);
+  new Chart(document.getElementById('c-bar-school'),{
+    type:'bar',
+    data:{labels:t10.map(t=>t.school),datasets:[{
+      label:'ผู้แทนสะสม',data:t10.map(t=>t.total),
+      backgroundColor:t10.map(t=>(SC[t.school]||'#1550a0')+'cc'),borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,
+      plugins:{legend:{display:false},tooltip:{bodyFont:{size:12,weight:'700'}}},
+      scales:{x:{grid:GRIDOPT,ticks:{...tickStyle}},y:{grid:{display:false},ticks:{font:{size:11,weight:'700'},color:'#0d1b35'}}}},
+    plugins:[datalabelPlugin]
+  });
+  const subTotals=D.subjects.map(s=>D.years.reduce((a,y)=>a+gv(D.subjYearTotal[s],y),0));
+  new Chart(document.getElementById('c-pie'),{
+    type:'doughnut',
+    data:{labels:D.subjects,datasets:[{data:subTotals,backgroundColor:D.subjects.map(s=>SubjC[s]),borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{boxWidth:13,padding:10,font:{size:12,weight:'700'},color:'#0d1b35'}}}}
+  });
+}
+
+// BY SCHOOL
+let schChart;
+const activeSch=new Set(['เตรียมอุดมศึกษา','มหิดลวิทยานุสรณ์','สวนกุหลาบวิทยาลัย','กำเนิดวิทย์']);
+function initSchool(){
+  schChart=new Chart(document.getElementById('c-sch-line'),{
+    type:'line',data:{labels:D.years,datasets:buildSchDs()},
+    options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,title:{display:true,text:'จำนวนผู้แทน',font:{size:12,weight:'700'},color:'#1e3358'}}}}
+  });
+}
+function buildSchDs(){
+  return[...activeSch].map(s=>({...lineDs(s,D.schoolYearData[s],D.years,SC[s]||'#1550a0')}));
+}
+function togSch(name,btn){
+  if(!inited['school']){initSchool();inited['school']=true;}
+  btn.classList.toggle('sel');
+  activeSch.has(name)?activeSch.delete(name):activeSch.add(name);
+  schChart.data.datasets=buildSchDs();schChart.update();
+}
+
+// BY SUBJECT
+let subjChart;
+function initSubject(){
+  subjChart=new Chart(document.getElementById('c-subj-line'),{
+    type:'line',data:{labels:D.years,datasets:buildSubjDs('all',false)},
+    options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,title:{display:true,text:'จำนวนผู้แทน',font:{size:12,weight:'700'},color:'#1e3358'}}}}
+  });
+  const ms=D.subjects.map(s=>Object.values(D.mSubjYr[s]||{}).reduce((a,b)=>a+b,0));
+  const ks=D.subjects.map(s=>Object.values(D.kSubjYr[s]||{}).reduce((a,b)=>a+b,0));
+  const sharedYMax=Math.ceil(Math.max(...ms,...ks)*1.22/5)*5;
+  const subjBarOpts=(title)=>({
+    responsive:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>`${title}: ${c.parsed.y} คน`},bodyFont:{size:12,weight:'700'}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:11,weight:'700'},color:'#0d1b35'}},
+      y:{grid:GRIDOPT,max:sharedYMax,ticks:{...tickStyle,stepSize:5}}
+    }
+  });
+  new Chart(document.getElementById('c-m-subj-bar'),{
+    type:'bar',
+    data:{labels:D.subjects,datasets:[{label:'มหิดลฯ',data:ms,backgroundColor:D.subjects.map(s=>SubjC[s]+'cc'),borderRadius:4}]},
+    options:subjBarOpts('มหิดลฯ'),plugins:[datalabelPlugin]
+  });
+  new Chart(document.getElementById('c-k-subj-bar'),{
+    type:'bar',
+    data:{labels:D.subjects,datasets:[{label:'กำเนิดวิทย์',data:ks,backgroundColor:D.subjects.map(s=>SubjC[s]+'cc'),borderRadius:4}]},
+    options:subjBarOpts('กำเนิดวิทย์'),plugins:[datalabelPlugin]
+  });
+}
+function buildSubjDs(school,coreOnly){
+  let subjs=coreOnly?D.core:D.subjects;
+  if(school==='all') return subjs.map(s=>lineDs(s,D.subjYearTotal[s],D.years,SubjC[s]||'#888'));
+  const src=school==='มหิดลวิทยานุสรณ์'?D.mSubjYr:school==='กำเนิดวิทย์'?D.kSubjYr:null;
+  if(!src) return[lineDs(school,D.schoolYearData[school]||{},D.years,SC[school]||'#1550a0')];
+  return subjs.map(s=>lineDs(s,src[s]||{},D.years,SubjC[s]||'#888'));
+}
+function updSubj(){
+  subjChart.data.datasets=buildSubjDs(document.getElementById('subj-sch').value,document.getElementById('core-only').checked);
+  subjChart.update();
+}
+
+// COMPARE
+let cmpSubjChart;
+function initCompare(){
+  const allYr=D.years.filter(y=>y>=2017);
+  new Chart(document.getElementById('c-cmp-overall'),{
+    type:'line',
+    data:{labels:allYr,datasets:[
+      lineDs('มหิดลวิทยานุสรณ์',D.mYr,allYr,'#1550a0',{fill:true,borderWidth:2.5,pointRadius:4}),
+      lineDs('กำเนิดวิทย์',D.kYr,allYr,'#b03500',{fill:true,borderWidth:2.5,pointRadius:4,borderDash:[6,3]}),
+    ]},
+    options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,min:0,max:14}}}
+  });
+  const yr2=D.years.filter(y=>y>=2017);
+  cmpSubjChart=new Chart(document.getElementById('c-cmp-subj'),{
+    type:'bar',
+    data:{labels:yr2,datasets:[
+      {label:'มหิดลฯ',data:yr2.map(y=>gv(D.mYr,y)),backgroundColor:'#1550a0cc',borderColor:'#1550a0',borderWidth:1.5,borderRadius:3},
+      {label:'กำเนิดวิทย์',data:yr2.map(y=>gv(D.kYr,y)),backgroundColor:'#b03500cc',borderColor:'#b03500',borderWidth:1.5,borderRadius:3},
+    ]},
+    options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,min:0}}},
+    plugins:[datalabelPlugin]
+  });
+}
+function updCmp(subj,btn){
+  document.querySelectorAll('#sec-compare .ctrl button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const yr=D.years.filter(y=>y>=2017);
+  let md,kd;
+  if(subj==='all'){md=yr.map(y=>gv(D.mYr,y));kd=yr.map(y=>gv(D.kYr,y));}
+  else{md=yr.map(y=>gv((D.mSubjYr[subj]||{}),y));kd=yr.map(y=>gv((D.kSubjYr[subj]||{}),y));}
+  cmpSubjChart.data.labels=yr;
+  cmpSubjChart.data.datasets[0].data=md;
+  cmpSubjChart.data.datasets[1].data=kd;
+  cmpSubjChart.update();
+}
+
+// TREND TABLE
+function initTrends(){
+  function mkList(arr,el){
+    el.innerHTML=arr.map(t=>`<div class="trend-item">
+      <strong>${t.school}</strong>
+      <span>สะสม ${t.total} คน · slope ${t.slope>0?'+':''}${t.slope}/ปี · p=${t.p}</span>
+    </div>`).join('');
+  }
+  mkList(D.trends.filter(t=>t.direction==='up'&&t.p<0.05),document.getElementById('up-list'));
+  mkList(D.trends.filter(t=>t.direction==='down'&&t.p<0.05),document.getElementById('dn-list'));
+  mkList(D.trends.filter(t=>!(t.direction!=='stable'&&t.p<0.05)),document.getElementById('st-list'));
+  document.getElementById('trend-tbody').innerHTML=D.trends.map(t=>{
+    const badge=t.direction==='up'?'<span class="badge b-up">↑ เพิ่มขึ้น</span>':
+                t.direction==='down'?'<span class="badge b-dn">↓ ลดลง</span>':
+                '<span class="badge b-st">→ ทรงตัว</span>';
+    const sig=t.p>=0.05?'<span style="color:var(--mut);font-size:.74rem"> (ยังไม่มีนัยสำคัญ)</span>':'';
+    return`<tr><td><strong>${t.school}</strong></td><td>${t.total}</td>
+      <td>${t.slope>0?'+':''}${t.slope}</td><td>${t.r2}</td>
+      <td>${t.p}${sig}</td><td>${badge}</td></tr>`;
+  }).join('');
+}
+
+// MAHIDOL
+let mShareChart;
+const QUOTA_NOTE={
+  'วิทยาศาสตร์โลกและอวกาศ':'โควต้า 4 คน/ปี (คำนวณจากโควต้าคงที่ บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)',
+  'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์':'โควต้า 5 คน/ปี (คำนวณจากโควต้าคงที่ บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)',
+};
+function initMahidol(){
+  const mYr=D.years.filter(y=>y>=2004);
+  const mc=['ทอง','เงิน','ทองแดง','เกียรติคุณ','เข้าร่วม'];
+  const mcol={'ทอง':'#c47800','เงิน':'#475569','ทองแดง':'#7c2d12','เกียรติคุณ':'#1550a0','เข้าร่วม':'#6d28d9'};
+  new Chart(document.getElementById('c-m-medals'),{
+    type:'bar',data:{labels:mYr,datasets:mc.map(m=>({
+      label:m==='ทอง'?'🥇 ทอง':m==='เงิน'?'🥈 เงิน':m==='ทองแดง'?'🥉 ทองแดง':m,
+      data:mYr.map(y=>((D.mMedalsYr[String(y)]||{})[m]||0)),
+      backgroundColor:mcol[m],borderWidth:0,
+    }))},
+    options:{...baseOpts,scales:{x:{stacked:true,grid:GRIDOPT,ticks:tickStyle},y:{stacked:true,grid:GRIDOPT,ticks:tickStyle}}}
+  });
+  const subjs=D.subjects;
+  new Chart(document.getElementById('c-m-subj-medal'),{
+    type:'bar',
+    data:{labels:subjs,datasets:[
+      {label:'🥇 ทอง',data:subjs.map(s=>(D.mSubjMedal[s]||{})['ทอง']||0),backgroundColor:'#c47800cc',borderRadius:3},
+      {label:'🥈 เงิน',data:subjs.map(s=>(D.mSubjMedal[s]||{})['เงิน']||0),backgroundColor:'#475569cc',borderRadius:3},
+      {label:'🥉 ทองแดง',data:subjs.map(s=>(D.mSubjMedal[s]||{})['ทองแดง']||0),backgroundColor:'#7c2d12cc',borderRadius:3},
+    ]},
+    options:{...baseOpts,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,weight:'700'},color:'#0d1b35'}},y:{stacked:true,grid:GRIDOPT,ticks:tickStyle}}},
+    plugins:[datalabelPlugin]
+  });
+  initShare('ชีววิทยา');
+}
+function initShare(subj){
+  const yr=D.years.filter(y=>y>=2004);
+  const shareData=D.mShareQuota[subj]||{};
+  const pct=yr.map(y=>shareData[String(y)]||0);
+  if(mShareChart)mShareChart.destroy();
+  document.getElementById('share-note').textContent=QUOTA_NOTE[subj]||'';
+  mShareChart=new Chart(document.getElementById('c-m-share'),{
+    type:'bar',
+    data:{labels:yr,datasets:[{
+      label:'สัดส่วนมหิดลฯ (%)',data:pct,
+      backgroundColor:pct.map(v=>v>=50?'#1550a0cc':'#93c5fdcc'),borderRadius:3,
+    }]},
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:(ctx)=>`${ctx.parsed.y}% (โควต้า ${D.quota[subj]||4} คน)`},bodyFont:{size:12,weight:'700'}}},
+      scales:{
+        x:{grid:{display:false},ticks:tickStyle},
+        y:{grid:GRIDOPT,title:{display:true,text:'% ของโควต้าวิชา',font:{size:12,weight:'700'},color:'#1e3358'},
+          min:0,max:110,ticks:{...tickStyle,callback:v=>v+'%'}}
+      }
+    },
+    plugins:[datalabelPlugin]
+  });
+}
+function updShare(){initShare(document.getElementById('share-sel').value);}
+
+window.addEventListener('DOMContentLoaded',()=>{initSec('overview');inited['overview']=true;});
+</script>
+</body>
+</html>
