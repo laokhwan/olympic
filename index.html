@@ -410,11 +410,19 @@ main{padding:22px 36px;max-width:1220px}
       <select id="th-subj-sel" onchange="updThTimeline()">
         <option>คณิตศาสตร์</option><option>ฟิสิกส์</option><option>เคมี</option>
         <option>ชีววิทยา</option><option>คอมพิวเตอร์</option>
+        <option>ภูมิศาสตร์</option>
         <option>ดาราศาสตร์และฟิสิกส์ดาราศาสตร์</option>
-        <option>ภูมิศาสตร์</option><option>วิทยาศาสตร์โลกและอวกาศ</option>
+        <option>วิทยาศาสตร์โลกและอวกาศ</option>
       </select>
     </div>
-    <div class="chart-wrap chart-tall"><canvas id="c-th-timeline-subj"></canvas></div>
+    <div id="th-subj-notice" style="display:none;background:#fef9c3;border:1px solid #fde68a;border-left:4px solid #f59e0b;
+      border-radius:8px;padding:13px 17px;font-size:0.84rem;color:#78350f;font-weight:500;line-height:1.7">
+      <strong style="color:#92400e">⚠ ไม่แสดงกราฟสำหรับวิชานี้</strong><br>
+      ข้อมูลในฐานข้อมูลปัจจุบันสำหรับวิชา IOAA (ดาราศาสตร์และฟิสิกส์ดาราศาสตร์) และ IESO (วิทยาศาสตร์โลกและอวกาศ)
+      มีเฉพาะผู้แทนจากโรงเรียนมหิดลวิทยานุสรณ์และกำเนิดวิทย์เท่านั้น จึงไม่สามารถแสดงภาพรวมระดับประเทศที่ครบถ้วนได้
+      หากต้องการดูผลงานสองวิชานี้ของมหิดลวิทยานุสรณ์ กรุณาดูในหน้า <strong>วิเคราะห์เชิงลึก: มหิดลฯ</strong>
+    </div>
+    <div id="th-subj-chart-wrap" class="chart-wrap chart-tall"><canvas id="c-th-timeline-subj"></canvas></div>
   </div>
 
   <div class="insight">
@@ -521,12 +529,25 @@ function initThailand(){
   // Timeline per subject (default: คณิตศาสตร์)
   updThTimeline();
 }
+const INCOMPLETE_SUBJ = new Set(['ดาราศาสตร์และฟิสิกส์ดาราศาสตร์','วิทยาศาสตร์โลกและอวกาศ']);
+
 function updThTimeline(){
-  const subj=document.getElementById('th-subj-sel').value;
-  const sdata=MD.subjYearMedal[subj]||{};
-  const yrs=Object.keys(sdata).sort();
-  if(thTimelineSubjChart)thTimelineSubjChart.destroy();
-  thTimelineSubjChart=new Chart(document.getElementById('c-th-timeline-subj'),{
+  const subj = document.getElementById('th-subj-sel').value;
+  const notice = document.getElementById('th-subj-notice');
+  const chartWrap = document.getElementById('th-subj-chart-wrap');
+
+  if(INCOMPLETE_SUBJ.has(subj)){
+    notice.style.display = 'block';
+    chartWrap.style.display = 'none';
+    return;
+  }
+  notice.style.display = 'none';
+  chartWrap.style.display = 'block';
+
+  const sdata = MD.subjYearMedal[subj]||{};
+  const yrs = Object.keys(sdata).sort();
+  if(thTimelineSubjChart) thTimelineSubjChart.destroy();
+  thTimelineSubjChart = new Chart(document.getElementById('c-th-timeline-subj'),{
     type:'bar',
     data:{labels:yrs,datasets:MEDALS.map(m=>({
       label:MLABEL[m],
