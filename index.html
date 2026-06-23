@@ -161,20 +161,12 @@ main{padding:22px 36px;max-width:1220px}
 <!-- OVERVIEW -->
 <div id="sec-overview" class="section active">
   <div class="sec-title">ภาพรวมสถิติ</div>
-  <!-- <div class="g4" style="margin-bottom:18px">
-    <div class="kpi"><div class="kpi-n" style="color:var(--kamnoed)">100%</div><div class="kpi-l">อัตราได้เหรียญกำเนิดวิทย์</div></div>
-    <div class="kpi"><div class="kpi-n">37%</div><div class="kpi-l">สัดส่วนมหิดลฯ จากที่นั่งทุกวิชา (2547–2568)</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--triam)">37%</div><div class="kpi-l">สัดส่วนเตรียมอุดมศึกษา (5 วิชาหลัก ตลอดกาล)</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">95%</div><div class="kpi-l">อัตราได้เหรียญมหิดลฯ (ทุกวิชา)</div></div>
-  </div> -->
-
   <div class="g4" style="margin-bottom:18px">
-    <div class="kpi"><div class="kpi-n">911</div><div class="kpi-l">ผู้แทนทั้งหมด<br>(37 ปี)</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">95%</div><div class="kpi-l">อัตราได้เหรียญมหิดลฯ (ทุกวิชา)</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--mahidol)">167</div><div class="kpi-l">มหิดลวิทยานุสรณ์<br>อันดับ 2 (2004–2025)</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">38</div><div class="kpi-l">เหรียญทองมหิดลฯ<br>จาก 167 ผู้แทน</div></div>
+    <div class="kpi"><div class="kpi-n">167</div><div class="kpi-l">ผู้แทนประเทศไทยจากมหิดลฯ สะสมทุกวิชา (2547–2568)</div></div>
+    <div class="kpi"><div class="kpi-n">7.6</div><div class="kpi-l">เฉลี่ยจำนวนผู้แทนมหิดลฯ ต่อปี (22 ปี ทุกวิชา)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">38</div><div class="kpi-l">เหรียญทองสะสมของมหิดลฯ (23% ของผู้แทนทั้งหมด)</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--up)">93%</div><div class="kpi-l">อัตราได้รับเหรียญรางวัลของมหิดลฯ (ทอง + เงิน + ทองแดง)</div></div>
   </div>
-
   <div class="card chart-tall">
     <h3>จำนวนผู้แทนต่อปี แยกโรงเรียนหลัก (รวมทุกวิชา)</h3>
     <div class="chart-wrap"><canvas id="c-stacked"></canvas></div>
@@ -289,6 +281,7 @@ main{padding:22px 36px;max-width:1220px}
       <button onclick="updCmp('เคมี',this)">เคมี</button>
       <button onclick="updCmp('ดาราศาสตร์และฟิสิกส์ดาราศาสตร์',this)">IOAA</button>
       <button onclick="updCmp('วิทยาศาสตร์โลกและอวกาศ',this)">IESO</button>
+      <button onclick="updCmp('ภูมิศาสตร์',this)">ภูมิศาสตร์</button>
     </div>
     <div class="chart-wrap"><canvas id="c-cmp-subj"></canvas></div>
   </div>
@@ -333,18 +326,25 @@ main{padding:22px 36px;max-width:1220px}
     </div>
   </div>
   <div class="card">
-    <h3>สัดส่วนที่นั่งผู้แทนมหิดลฯ ต่อโควต้าวิชา (%) — เลือกวิชา</h3>
+    <h3>สัดส่วนที่นั่งผู้แทน: มหิดลฯ vs กำเนิดวิทย์ vs โรงเรียนอื่นๆ (% ของโควต้าวิชา)</h3>
     <div class="ctrl">
-      <select id="share-sel" onchange="updShare()">
+      <select id="share3-sel" onchange="updShare3()">
+        <option value="__all__">★ รวมทุกวิชา</option>
         <option>ชีววิทยา</option><option>ฟิสิกส์</option><option>เคมี</option>
         <option>คอมพิวเตอร์</option><option>คณิตศาสตร์</option>
         <option>ดาราศาสตร์และฟิสิกส์ดาราศาสตร์</option>
         <option>วิทยาศาสตร์โลกและอวกาศ</option>
         <option>ภูมิศาสตร์</option>
       </select>
-      <span id="share-note" style="font-size:0.79rem;color:var(--mut);font-weight:600;margin-left:6px"></span>
+      <span id="share3-note" style="font-size:0.79rem;color:var(--mut);font-weight:600;margin-left:6px"></span>
     </div>
-    <div class="chart-wrap"><canvas id="c-m-share"></canvas></div>
+    <div class="chart-wrap chart-tall"><canvas id="c-share3"></canvas></div>
+    <div class="insight" style="margin-top:12px">
+      <strong>วิธีอ่านกราฟ:</strong> แต่ละแท่งแสดงสัดส่วนจากโควต้าทั้งหมดของวิชานั้นในแต่ละปี (รวมทุกวิชา = ผลรวมโควต้าทุกวิชาที่จัดในปีนั้น)
+      <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle"></span><strong style="color:#1550a0">มหิดลฯ</strong>
+      <span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle"></span><strong style="color:#b03500">กำเนิดวิทย์</strong>
+      <span style="display:inline-block;width:12px;height:12px;background:#d1d5db;border-radius:2px;margin:0 4px 0 12px;vertical-align:middle"></span><strong style="color:#4b5563">โรงเรียนอื่นๆ</strong>
+    </div>
   </div>
   <div class="card">
     <h3>ตารางข้อมูลเชิงกลยุทธ์</h3>
@@ -386,17 +386,26 @@ Chart.defaults.font.family = "'Sarabun', sans-serif";
 Chart.defaults.font.size = 12;
 Chart.defaults.font.weight = '600';
 
+// Vivid, well-separated palette for light backgrounds
 const SC={
-  'เตรียมอุดมศึกษา':'#145228','มหิดลวิทยานุสรณ์':'#1550a0',
-  'สวนกุหลาบวิทยาลัย':'#6d28d9','กำเนิดวิทย์':'#b03500',
-  'กรุงเทพคริสเตียนวิทยาลัย':'#a16207','บดินทรเดชา (สิงห์ สิงหเสนี)':'#0369a1',
-  'สาธิตจุฬาฯ (ฝ่ายมัธยม)':'#0d7465','สามเสนวิทยาลัย':'#9d174d',
+  'เตรียมอุดมศึกษา':  '#10b981', // emerald
+  'มหิดลวิทยานุสรณ์': '#3b82f6', // bright blue
+  'สวนกุหลาบวิทยาลัย':'#a855f7', // violet
+  'กำเนิดวิทย์':      '#f97316', // orange
+  'กรุงเทพคริสเตียนวิทยาลัย':'#eab308', // amber
+  'บดินทรเดชา (สิงห์ สิงหเสนี)':'#06b6d4', // cyan
+  'สาธิตจุฬาฯ (ฝ่ายมัธยม)':'#ec4899', // pink
+  'สามเสนวิทยาลัย':   '#f43f5e', // rose
 };
 const SubjC={
-  'คณิตศาสตร์':'#1e40af','คอมพิวเตอร์':'#15803d','ชีววิทยา':'#b45309',
-  'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์':'#6d28d9',
-  'ฟิสิกส์':'#be185d','ภูมิศาสตร์':'#c2410c',
-  'วิทยาศาสตร์โลกและอวกาศ':'#0e7490','เคมี':'#b91c1c',
+  'คณิตศาสตร์':                      '#3b82f6', // blue
+  'คอมพิวเตอร์':                     '#10b981', // emerald
+  'ชีววิทยา':                        '#f59e0b', // amber
+  'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์': '#8b5cf6', // purple
+  'ฟิสิกส์':                         '#ec4899', // pink
+  'ภูมิศาสตร์':                      '#f97316', // orange
+  'วิทยาศาสตร์โลกและอวกาศ':         '#06b6d4', // cyan
+  'เคมี':                            '#ef4444', // red
 };
 
 const inited={};
@@ -434,9 +443,9 @@ function lineDs(label,obj,years,color,extra={}){
     borderWidth:2,tension:.3,fill:false,pointRadius:3,...extra};
 }
 
-// Datalabels plugin for bar charts
-const datalabelPlugin={
-  id:'outside-labels',
+// Data labels: inside each bar segment, anchored to the top (inner-end)
+const insideLabelPlugin={
+  id:'inside-labels',
   afterDatasetsDraw(chart){
     const {ctx}=chart;
     chart.data.datasets.forEach((ds,di)=>{
@@ -444,18 +453,25 @@ const datalabelPlugin={
       if(meta.type!=='bar')return;
       meta.data.forEach((bar,i)=>{
         const val=ds.data[i];
-        if(!val)return;
+        if(!val||val<5)return; // skip tiny segments to avoid overlap
+        const barH=Math.abs(bar.height||bar.base-bar.y);
+        if(barH<14)return;    // skip if bar too thin to fit text
         ctx.save();
-        ctx.font='700 12px "Sarabun",sans-serif';
-        ctx.fillStyle='#0d1b35';
+        ctx.font='700 11px "Sarabun",sans-serif';
+        // white text inside colored bars, dark text inside gray "others" bar
+        const isDark=(ds.backgroundColor||'').includes('d1d5db');
+        ctx.fillStyle=isDark?'#1a2744':'#ffffff';
         ctx.textAlign='center';
-        ctx.textBaseline='bottom';
-        ctx.fillText(val,bar.x,bar.y-3);
+        ctx.textBaseline='top';
+        // position: top of bar segment + 3px padding
+        ctx.fillText(val, bar.x, bar.y+3);
         ctx.restore();
       });
     });
   }
 };
+// alias for non-stacked bar charts (single dataset) — same behaviour, white text on color
+const datalabelPlugin=insideLabelPlugin;
 
 // OVERVIEW
 function initOverview(){
@@ -555,8 +571,8 @@ function initCompare(){
   new Chart(document.getElementById('c-cmp-overall'),{
     type:'line',
     data:{labels:allYr,datasets:[
-      lineDs('มหิดลวิทยานุสรณ์',D.mYr,allYr,'#1550a0',{fill:true,borderWidth:2.5,pointRadius:4}),
-      lineDs('กำเนิดวิทย์',D.kYr,allYr,'#b03500',{fill:true,borderWidth:2.5,pointRadius:4,borderDash:[6,3]}),
+      lineDs('มหิดลวิทยานุสรณ์',D.mYr,allYr,'#3b82f6',{fill:true,borderWidth:2.5,pointRadius:4}),
+      lineDs('กำเนิดวิทย์',D.kYr,allYr,'#f97316',{fill:true,borderWidth:2.5,pointRadius:4,borderDash:[6,3]}),
     ]},
     options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,min:0,max:14}}}
   });
@@ -564,8 +580,8 @@ function initCompare(){
   cmpSubjChart=new Chart(document.getElementById('c-cmp-subj'),{
     type:'bar',
     data:{labels:yr2,datasets:[
-      {label:'มหิดลฯ',data:yr2.map(y=>gv(D.mYr,y)),backgroundColor:'#1550a0cc',borderColor:'#1550a0',borderWidth:1.5,borderRadius:3},
-      {label:'กำเนิดวิทย์',data:yr2.map(y=>gv(D.kYr,y)),backgroundColor:'#b03500cc',borderColor:'#b03500',borderWidth:1.5,borderRadius:3},
+      {label:'มหิดลฯ',data:yr2.map(y=>gv(D.mYr,y)),backgroundColor:'#3b82f6cc',borderColor:'#3b82f6',borderWidth:1.5,borderRadius:3},
+      {label:'กำเนิดวิทย์',data:yr2.map(y=>gv(D.kYr,y)),backgroundColor:'#f97316cc',borderColor:'#f97316',borderWidth:1.5,borderRadius:3},
     ]},
     options:{...baseOpts,scales:{x:{grid:GRIDOPT,ticks:tickStyle},y:{grid:GRIDOPT,ticks:tickStyle,min:0}}},
     plugins:[datalabelPlugin]
@@ -607,7 +623,62 @@ function initTrends(){
 }
 
 // MAHIDOL
-let mShareChart;
+// ---- 3-group share data ----
+const S3 = {"คณิตศาสตร์": {"quota": 6, "years": ["1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "mahidol": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 33.3, 16.7, 16.7, 0.0, 0.0, 0.0, 16.7, 16.7, 0.0, 0.0, 16.7, 16.7, 16.7, 0.0, 16.7, 16.7, 0.0, 0.0, 16.7, 16.7, 0.0, 0.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 16.7, 16.7, 0.0, 0.0, 0.0, 0.0, 0.0, 16.7], "others": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 66.7, 83.3, 83.3, 100.0, 100.0, 100.0, 83.3, 83.3, 100.0, 100.0, 83.3, 83.3, 83.3, 100.0, 66.7, 66.7, 100.0, 100.0, 83.3, 83.3, 100.0, 83.3]}, "คอมพิวเตอร์": {"quota": 4, "years": ["1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "mahidol": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.0, 25.0, 25.0, 50.0, 50.0, 0.0, 25.0, 25.0, 50.0, 0.0, 25.0, 50.0, 50.0, 0.0, 25.0, 25.0, 25.0, 25.0, 0.0, 0.0, 25.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.0, 25.0, 25.0, 0.0, 25.0, 0.0, 0.0, 0.0], "others": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 75.0, 75.0, 75.0, 50.0, 50.0, 100.0, 75.0, 75.0, 50.0, 100.0, 75.0, 50.0, 50.0, 50.0, 50.0, 50.0, 75.0, 50.0, 100.0, 100.0, 75.0]}, "ชีววิทยา": {"quota": 4, "years": ["1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "mahidol": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.0, 50.0, 25.0, 0.0, 0.0, 0.0, 100.0, 50.0, 75.0, 25.0, 25.0, 50.0, 50.0, 50.0, 75.0, 25.0, 25.0, 25.0, 0.0, 50.0, 25.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.0, 25.0, 50.0], "others": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 75.0, 50.0, 75.0, 100.0, 100.0, 100.0, 0.0, 50.0, 25.0, 75.0, 75.0, 50.0, 50.0, 50.0, 25.0, 75.0, 75.0, 75.0, 75.0, 25.0, 25.0]}, "ดาราศาสตร์และฟิสิกส์ดาราศาสตร์": {"quota": 5, "years": ["2004", "2006", "2007", "2008", "2009", "2010", "2011", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2022", "2023", "2024"], "mahidol": [20.0, 40.0, 20.0, 60.0, 20.0, 40.0, 40.0, 20.0, 60.0, 60.0, 20.0, 20.0, 0.0, 60.0, 40.0, 20.0, 40.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 40.0, 40.0, 0.0, 0.0, 40.0, 20.0], "others": [80.0, 60.0, 80.0, 40.0, 80.0, 60.0, 60.0, 80.0, 40.0, 40.0, 80.0, 40.0, 60.0, 40.0, 60.0, 40.0, 40.0]}, "ฟิสิกส์": {"quota": 5, "years": ["1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "mahidol": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 20.0, 20.0, 20.0, 40.0, 60.0, 60.0, 20.0, 40.0, 40.0, 60.0, 40.0, 20.0, 20.0, 20.0, 20.0, 20.0, 0.0, 0.0, 0.0, 0.0, 20.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 20.0, 0.0, 0.0, 40.0, 60.0, 20.0, 20.0, 20.0], "others": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 80.0, 80.0, 80.0, 60.0, 40.0, 40.0, 80.0, 60.0, 60.0, 40.0, 60.0, 80.0, 80.0, 60.0, 80.0, 80.0, 60.0, 40.0, 80.0, 80.0, 60.0]}, "ภูมิศาสตร์": {"quota": 4, "years": ["2015", "2016", "2017", "2018", "2019", "2021", "2022", "2023", "2024"], "mahidol": [25.0, 25.0, 50.0, 75.0, 50.0, 0.0, 50.0, 0.0, 25.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "others": [75.0, 75.0, 50.0, 25.0, 50.0, 100.0, 50.0, 100.0, 75.0]}, "วิทยาศาสตร์โลกและอวกาศ": {"quota": 4, "years": ["2010", "2011", "2014", "2016", "2017", "2018", "2019", "2021", "2024"], "mahidol": [50.0, 25.0, 25.0, 25.0, 25.0, 50.0, 0.0, 50.0, 25.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 25.0, 25.0, 25.0, 0.0, 25.0], "others": [50.0, 75.0, 75.0, 75.0, 50.0, 25.0, 75.0, 50.0, 50.0]}, "เคมี": {"quota": 4, "years": ["1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "mahidol": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.0, 0.0, 75.0, 25.0, 50.0, 50.0, 25.0, 50.0, 25.0, 50.0, 25.0, 25.0, 0.0, 50.0, 0.0, 25.0, 0.0, 0.0, 0.0, 50.0, 25.0, 25.0], "kamnoed": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.0, 25.0, 50.0, 0.0, 50.0, 50.0], "others": [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 75.0, 100.0, 25.0, 75.0, 50.0, 50.0, 75.0, 50.0, 75.0, 50.0, 75.0, 75.0, 100.0, 50.0, 100.0, 75.0, 75.0, 75.0, 50.0, 50.0, 25.0, 25.0]}};
+
+// ---- all-subjects combined 3-group data ----
+const S3_ALL = {"years":["1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025"],"data":{"1989":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":6},"1990":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":15},"1991":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1992":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1993":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1994":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1995":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1996":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1997":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1998":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"1999":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"2000":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"2001":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"2002":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"2003":{"mahidol":0.0,"kamnoed":0.0,"others":100.0,"quota":23},"2004":{"mahidol":14.3,"kamnoed":0.0,"others":85.7,"quota":28},"2005":{"mahidol":17.4,"kamnoed":0.0,"others":82.6,"quota":23},"2006":{"mahidol":35.7,"kamnoed":0.0,"others":64.3,"quota":28},"2007":{"mahidol":17.9,"kamnoed":0.0,"others":82.1,"quota":28},"2008":{"mahidol":32.1,"kamnoed":0.0,"others":67.9,"quota":28},"2009":{"mahidol":28.6,"kamnoed":0.0,"others":71.4,"quota":28},"2010":{"mahidol":28.1,"kamnoed":0.0,"others":71.9,"quota":32},"2011":{"mahidol":37.5,"kamnoed":0.0,"others":62.5,"quota":32},"2012":{"mahidol":26.1,"kamnoed":0.0,"others":73.9,"quota":23},"2013":{"mahidol":35.7,"kamnoed":0.0,"others":64.3,"quota":28},"2014":{"mahidol":31.2,"kamnoed":0.0,"others":68.8,"quota":32},"2015":{"mahidol":31.2,"kamnoed":0.0,"others":68.8,"quota":32},"2016":{"mahidol":25.0,"kamnoed":0.0,"others":75.0,"quota":36},"2017":{"mahidol":30.6,"kamnoed":8.3,"others":61.1,"quota":36},"2018":{"mahidol":25.0,"kamnoed":19.4,"others":55.6,"quota":36},"2019":{"mahidol":33.3,"kamnoed":8.3,"others":58.3,"quota":36},"2020":{"mahidol":13.0,"kamnoed":8.7,"others":78.3,"quota":23},"2021":{"mahidol":12.9,"kamnoed":9.7,"others":77.4,"quota":31},"2022":{"mahidol":21.9,"kamnoed":18.8,"others":59.4,"quota":32},"2023":{"mahidol":12.5,"kamnoed":12.5,"others":75.0,"quota":32},"2024":{"mahidol":19.4,"kamnoed":16.7,"others":63.9,"quota":36},"2025":{"mahidol":17.4,"kamnoed":26.1,"others":56.5,"quota":23}}};
+
+let share3Chart;
+function updShare3(){
+  const subj = document.getElementById('share3-sel').value;
+  const isAll = (subj === '__all__');
+  // Build labels, mahidol[], kamnoed[], others[], quota
+  let labels, mArr, kArr, oArr, quotaArr;
+  if(isAll){
+    labels = S3_ALL.years;
+    mArr = labels.map(y=>S3_ALL.data[y].mahidol);
+    kArr = labels.map(y=>S3_ALL.data[y].kamnoed);
+    oArr = labels.map(y=>S3_ALL.data[y].others);
+    quotaArr = labels.map(y=>S3_ALL.data[y].quota);
+    document.getElementById('share3-note').textContent = 'ผลรวมโควต้าทุกวิชาที่จัดในแต่ละปี';
+  } else {
+    const sd = S3[subj]; if(!sd) return;
+    labels = sd.years; mArr = sd.mahidol; kArr = sd.kamnoed; oArr = sd.others;
+    quotaArr = labels.map(()=>sd.quota);
+    const note = {'วิทยาศาสตร์โลกและอวกาศ':'โควต้า 4 คน/ปี (บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)',
+                  'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์':'โควต้า 5 คน/ปี (บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)'}[subj]||'';
+    document.getElementById('share3-note').textContent = note;
+  }
+  if(share3Chart) share3Chart.destroy();
+  share3Chart = new Chart(document.getElementById('c-share3'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'มหิดลวิทยานุสรณ์', data:mArr, backgroundColor:'#3b82f6cc', borderRadius:2},
+        {label:'กำเนิดวิทย์',        data:kArr, backgroundColor:'#f97316cc', borderRadius:2},
+        {label:'โรงเรียนอื่นๆ',      data:oArr, backgroundColor:'#d1d5dbcc', borderRadius:2},
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index'},
+      plugins:{
+        legend:{position:'bottom',labels:{boxWidth:13,padding:12,font:{size:12,weight:'700'},color:'#0d1b35'}},
+        tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: ${c.parsed.y}% (${Math.round(c.parsed.y*quotaArr[c.dataIndex]/100*10)/10} คน จาก ${quotaArr[c.dataIndex]})`},bodyFont:{size:12,weight:'600'}}
+      },
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:tickStyle},
+        y:{stacked:true,max:100,grid:GRIDOPT,ticks:{...tickStyle,callback:v=>v+'%'},
+           title:{display:true,text:'% ของโควต้าวิชา',font:{size:12,weight:'700'},color:'#1e3358'}}
+      }
+    },
+    plugins:[insideLabelPlugin]
+  });
+}
+
+function updShare(){}
 const QUOTA_NOTE={
   'วิทยาศาสตร์โลกและอวกาศ':'โควต้า 4 คน/ปี (คำนวณจากโควต้าคงที่ บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)',
   'ดาราศาสตร์และฟิสิกส์ดาราศาสตร์':'โควต้า 5 คน/ปี (คำนวณจากโควต้าคงที่ บางปีมีผู้แทนจากโรงเรียนอื่นด้วย)',
@@ -635,34 +706,8 @@ function initMahidol(){
     options:{...baseOpts,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,weight:'700'},color:'#0d1b35'}},y:{stacked:true,grid:GRIDOPT,ticks:tickStyle}}},
     plugins:[datalabelPlugin]
   });
-  initShare('ชีววิทยา');
+  updShare3();
 }
-function initShare(subj){
-  const yr=D.years.filter(y=>y>=2004);
-  const shareData=D.mShareQuota[subj]||{};
-  const pct=yr.map(y=>shareData[String(y)]||0);
-  if(mShareChart)mShareChart.destroy();
-  document.getElementById('share-note').textContent=QUOTA_NOTE[subj]||'';
-  mShareChart=new Chart(document.getElementById('c-m-share'),{
-    type:'bar',
-    data:{labels:yr,datasets:[{
-      label:'สัดส่วนมหิดลฯ (%)',data:pct,
-      backgroundColor:pct.map(v=>v>=50?'#1550a0cc':'#93c5fdcc'),borderRadius:3,
-    }]},
-    options:{
-      responsive:true,
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:(ctx)=>`${ctx.parsed.y}% (โควต้า ${D.quota[subj]||4} คน)`},bodyFont:{size:12,weight:'700'}}},
-      scales:{
-        x:{grid:{display:false},ticks:tickStyle},
-        y:{grid:GRIDOPT,title:{display:true,text:'% ของโควต้าวิชา',font:{size:12,weight:'700'},color:'#1e3358'},
-          min:0,max:100,ticks:{...tickStyle,callback:v=>v+'%'}}
-      }
-    },
-    plugins:[datalabelPlugin]
-  });
-}
-function updShare(){initShare(document.getElementById('share-sel').value);}
 
 window.addEventListener('DOMContentLoaded',()=>{initSec('overview');inited['overview']=true;});
 </script>
